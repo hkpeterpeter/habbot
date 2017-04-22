@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Canvas Game Example</title>
+    <!--[if IE]><script type="text/javascript" src="excanvas.js"></script><![endif]-->
+  </head>
+  <body>
+    <div id="canvasDiv"></div>
+    <script type="text/javascript" src="animate-character.js"></script>
+    <script type="text/javascript">
+    	prepareCanvas(document.getElementById("canvasDiv"), 957, 441);
+    </script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+
+    <script>
+
+    var stepCount = 0;
+    var zValueMax = 0.9;
+    var zValueMin = 0.6;
+    var doingExercise = false;
+    var exerciseDirection = 'up';
+
+    function processData(data) {
+
+      if ( doingExercise === false ) {
+
+          if (data.z > zValueMax) {
+            doingExercise = true;
+            exerciseDirection = 'up';
+          }
+          if ( data.z < zValueMin) {
+            doingExercise = true;
+            exerciseDirection = 'down';
+          }
+
+      } else { // doingExercise
+
+          if (exerciseDirection === 'up') {
+            if ( data.z < zValueMin ) {
+              doingExercise = false;
+              exerciseDirection = 'down';
+              stepCount++;
+              console.log("StepCount: " + stepCount + " , data.z: " + data.z
+                + " doing exericse: " + doingExercise + " ");
+            }
+          }
+
+          if (exerciseDirection === 'down' ) {
+            if ( data.z > zValueMax ) {
+              doingExercise = false;
+              exerciseDirection = 'up';
+              stepCount++;
+              console.log("StepCount: " + stepCount + " , data.z: " + data.z
+                + " doing exericse: " + doingExercise);
+            }
+          }
+
+      }
+    }
+
+    </script>
+
+    <script>
+      $(function () {
+        var socket = io("intense-temple-58138.herokuapp.com");
+        socket.on('serverMessage', function(data){
+            //console.log(data);
+
+            processData(data);
+
+        });
+
+
+        processData( {z:1.0} );
+        processData( {z:0.9} );
+        processData( {z:0.8} );
+        processData( {z:0.7} );
+        processData( {z:0.6} );
+        processData( {z:0.5} );
+        processData( {z:0.4} );
+        processData( {z:0.3} );
+        processData( {z:0.4} );
+        processData( {z:0.5} );
+        processData( {z:0.6} );
+        processData( {z:0.7} );
+        processData( {z:0.8} );
+        processData( {z:0.9} );
+        processData( {z:1.0} );
+
+
+
+      });
+    </script>
+
+    <button onclick="jump();">Jump</button>
+
+
+
+
+  </body>
+</html>
