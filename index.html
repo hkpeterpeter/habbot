@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Canvas Game Example</title>
+    <title>HabBot - Gamifiy the Rehabilitation</title>
     <!--[if IE]><script type="text/javascript" src="excanvas.js"></script><![endif]-->
   </head>
   <body>
@@ -22,18 +22,52 @@
     var zValueMin = 0.6;
     var doingExercise = false;
     var exerciseDirection = 'up';
+    var prevTime = 0;
+
+    function playClapping() {
+      var audio = new Audio('clapping.mp3');
+      audio.play();
+    }
+
+    function playMarioCoin() {
+      var audio = new Audio('mario_coin.mp3');
+      audio.play();
+    }
+
+    function doFinish() {
+      console.log("finish");
+      playClapping();
+      var socket = io("intense-temple-58138.herokuapp.com");
+      socket.emit('finish', { stepCount: stepCount });
+    }
+
+
+
+    function processVideo() {
+      // TODO: display video and play...
+    }
+
+
 
     function processData(data) {
+
+      if ( data == null )
+        return;
+
+      if ( data.z == null )
+        return;
 
       if ( doingExercise === false ) {
 
           if (data.z > zValueMax) {
             doingExercise = true;
             exerciseDirection = 'up';
+            prevTime = new Date();
           }
           if ( data.z < zValueMin) {
             doingExercise = true;
             exerciseDirection = 'down';
+            prevTime = new Date();
           }
 
       } else { // doingExercise
@@ -43,6 +77,21 @@
               doingExercise = false;
               exerciseDirection = 'down';
               stepCount++;
+              setCharacterStepCount(stepCount);
+
+              if (stepCount == 10)
+                doFinish();
+
+              jump();
+              //playClapping();
+              playMarioCoin();
+
+              var socket = io("intense-temple-58138.herokuapp.com");
+              socket.emit('up', {
+                status: 'up',
+                stepCount: stepCount, date: new Date() - prevTime });
+                prevTime = new Date();
+
               console.log("StepCount: " + stepCount + " , data.z: " + data.z
                 + " doing exericse: " + doingExercise + " ");
             }
@@ -53,6 +102,24 @@
               doingExercise = false;
               exerciseDirection = 'up';
               stepCount++;
+              setCharacterStepCount(stepCount);
+
+              if (stepCount == 10)
+                doFinish();
+
+              //jump();
+              //playMarioCoin();
+              //playClapping();
+
+              var socket = io("intense-temple-58138.herokuapp.com");
+              socket.emit('down',
+                { status: 'down',
+                 stepCount: stepCount,
+                 date: new Date() - prevTime });
+              prevTime = new Date();
+
+
+
               console.log("StepCount: " + stepCount + " , data.z: " + data.z
                 + " doing exericse: " + doingExercise);
             }
@@ -73,8 +140,14 @@
 
         });
 
+        socket.on('startVideo', function(data) {
+          console.log(data);
+          processVideo(data);
+        });
 
-        processData( {z:1.0} );
+
+        // testing...
+        /*processData( {z:1.0} );
         processData( {z:0.9} );
         processData( {z:0.8} );
         processData( {z:0.7} );
@@ -88,14 +161,20 @@
         processData( {z:0.7} );
         processData( {z:0.8} );
         processData( {z:0.9} );
-        processData( {z:1.0} );
+        processData( {z:1.0} );*/
+        //setCharacterStepCount(10);
 
 
 
       });
     </script>
 
-    <button onclick="jump();">Jump</button>
+<!--
+    <button onclick="jump();playMarioCoin();">Jump</button>
+
+    <button onclick="playClapping();">Clapping</button>
+    <button onclick="playMarioCoin();">Mario Coin</button>
+  -->
 
 
 

@@ -13,6 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
+
+
 var canvas;
 var context;
 var images = {};
@@ -36,6 +39,14 @@ var fpsInterval = setInterval(updateFPS, 1000);
 var numFramesDrawn = 0;
 var curFPS = 0;
 var jumping = false;
+
+
+// Added... from index.html to char.js
+var stepCount = 0;
+function setCharacterStepCount(c) {
+	stepCount = c;
+	console.log("character step count: " + c);
+}
 
 function updateFPS() {
 
@@ -70,7 +81,9 @@ function prepareCanvas(canvasDiv, canvasWidth, canvasHeight)
 	loadImage("leftArm-jump");
 	loadImage("legs-jump");
 	loadImage("rightArm-jump");
-	loadImage("background");
+	loadImage("background");  // background
+	loadImage("love"); // love icon
+	loadImage("white_mushroom"); // white mushroom
 }
 
 function loadImage(name) {
@@ -103,6 +116,14 @@ function redraw() {
 
 
   context.drawImage(images["background"], 0, 0);
+	if ( stepCount >= 10 ) // complete 5 actions... (5 x 2)
+	{
+		context.drawImage(images["love"], 820, 120);
+
+
+	}
+
+
 
   // Draw shadow
   if (jumping) {
@@ -130,6 +151,13 @@ function redraw() {
   context.drawImage(images["torso"], x, y - 50);
   context.drawImage(images["head"], x - 10, y - 125 - breathAmt);
   context.drawImage(images["hair"], x - 37, y - 138 - breathAmt);
+
+	if (!jumping) {
+		context.drawImage(images["white_mushroom"], x + 45, y - 85 - breathAmt );
+	} else {
+		context.drawImage(images["white_mushroom"], x + 55, y - 105 - breathAmt );
+	}
+
 
   if (jumping) {
 		context.drawImage(images["rightArm-jump"], x - 35, y - 42 - breathAmt);
@@ -199,8 +227,8 @@ function blink() {
 
 function jump() {
 
-	charX += 100;
-	console.log(charX);
+	charX += 150;
+	//console.log(charX);
 
   if (!jumping) {
 		jumping = true;
