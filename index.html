@@ -5,7 +5,18 @@
     <!--[if IE]><script type="text/javascript" src="excanvas.js"></script><![endif]-->
   </head>
   <body>
+
+    <iframe width="312" height="176" id="video"
+    src="https://www.youtube.com/embed/w3u9VPRZCQQ?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen
+     style="position:absolute;left:10px;visibility:hidden;" >
+  </iframe>
+
     <div id="canvasDiv"></div>
+
+    <h1>HabBot Demo for hackUST 2017</h1>
+
+
+
     <script type="text/javascript" src="animate-character.js"></script>
     <script type="text/javascript">
     	prepareCanvas(document.getElementById("canvasDiv"), 957, 441);
@@ -23,6 +34,13 @@
     var doingExercise = false;
     var exerciseDirection = 'up';
     var prevTime = 0;
+
+    var startVideoAlready = false;
+
+    function playMarioMusic() {
+      var audio = new Audio('mario_bg.mp3');
+      audio.play();
+    }
 
     function playClapping() {
       var audio = new Audio('clapping.mp3');
@@ -142,27 +160,28 @@
 
         socket.on('startVideo', function(data) {
           console.log(data);
-          processVideo(data);
+          //processVideo(data);
+
+          if ( startVideoAlready == false ) {
+            $("#video").css("visibility","visible");
+            $("#video")[0].src += "&autoplay=1";
+            ev.preventDefault();
+            startVideoAlready = true;
+          }
         });
 
 
-        // testing...
-        /*processData( {z:1.0} );
-        processData( {z:0.9} );
-        processData( {z:0.8} );
-        processData( {z:0.7} );
-        processData( {z:0.6} );
-        processData( {z:0.5} );
-        processData( {z:0.4} );
-        processData( {z:0.3} );
-        processData( {z:0.4} );
-        processData( {z:0.5} );
-        processData( {z:0.6} );
-        processData( {z:0.7} );
-        processData( {z:0.8} );
-        processData( {z:0.9} );
-        processData( {z:1.0} );*/
-        //setCharacterStepCount(10);
+
+          $('#play-video').on('click', function(ev) {
+
+            $("#video").css("visibility","visible");
+            $("#video")[0].src += "&autoplay=1";
+            ev.preventDefault();
+
+          });
+
+
+          playMarioMusic();
 
 
 
@@ -175,6 +194,9 @@
     <button onclick="playClapping();">Clapping</button>
     <button onclick="playMarioCoin();">Mario Coin</button>
   -->
+
+
+  Debug: <a id="play-video" href="#">Play Video</a><br />
 
 
 

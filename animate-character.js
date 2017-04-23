@@ -227,6 +227,7 @@ function blink() {
 
 function jump() {
 
+  
 	charX += 150;
 	//console.log(charX);
 
